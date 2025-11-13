@@ -1,15 +1,20 @@
-import React from 'react'
-import Sidebar from './components/Sidebar'
-import Login from './pages/Login'
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-const App = () => {
+export default function App(){
   return (
-    <>
-    <div className="h-screen flex bg-gray-50">
-      <Login/>
-    </div>
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+      </Routes>
+    </Router>
+  );
 }
-
-export default App

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -7,7 +8,9 @@ export default function Login({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [remember, setRemember] = useState(true);
 
-  // Demo credentials (use these if the seeded DB is missing)
+  const navigate = useNavigate();
+
+  // Demo credentials 
   const demoCreds = [
     { email: "admin@aroma.com", password: "AromaDemo123!", role: "admin", name: "Admin" },
     { email: "sales@aroma.com", password: "SalesDemo123!", role: "sales", name: "Sales Rep" },
@@ -75,6 +78,12 @@ export default function Login({ onLogin }) {
       setLoading(false);
       return;
     }
+    if (user) {
+      localStorage.setItem("aroma_user", JSON.stringify(user));
+      navigate("/dashboard"); 
+    } else {
+      setError("Invalid email or password");
+    }
 
     // store current user (prototype - not secure; remove password in production)
     const session = { id: `u_${Date.now()}`, email: user.email, name: user.name, role: user.role };
@@ -87,16 +96,10 @@ export default function Login({ onLogin }) {
     if (onLogin) onLogin(session);
   }
 
-//   function handleDemoFill(role) {
-//     const u = demoCreds.find(d => d.role === role);
-//     if (!u) return;
-//     setEmail(u.email);
-//     setPassword(u.password);
-//     setError("");
-//   }
+
 
   return (
-  <div className="max-w-5xl w-full flex md:flex-row items-center justify-center gap-8 mx-auto">
+  <div className="max-w-5xl w-full flex md:flex-row items-center justify-center gap-8 mx-auto p-20">
 
     {/* Left: Welcome / Branding */}
     <div className="bg-white rounded-2xl p-8 shadow-lg flex-1 max-w-md">
@@ -201,26 +204,5 @@ export default function Login({ onLogin }) {
       </form>
     </div>
 </div>
-
   );
 }
-
-// function SeedStatus(){
-//   const [seeded, setSeeded] = useState(false);
-//   useEffect(()=>{
-//     try{
-//       const raw = localStorage.getItem('aroma_crm_db');
-//       if(!raw) setSeeded(false);
-//       else{
-//         const db = JSON.parse(raw);
-//         setSeeded(Array.isArray(db.users) && db.users.length>0);
-//       }
-//     }catch(e){ setSeeded(false); }
-//   },[]);
-
-//   return (
-//     <div className={`text-sm ${seeded? 'text-green-600':'text-yellow-600'}`}>
-//       {seeded? 'Seeded (local demo DB found)':'Not seeded — using built-in demo credentials'}
-//     </div>
-//   );
-// }
